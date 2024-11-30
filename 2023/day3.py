@@ -46,12 +46,20 @@ def looking_for_symbol(line_to_parts, line_to_symbols):
                             found_parts.append(position_details["number"])
     return found_parts
 
+def get_gear_ratio(line_to_parts, line_to_symbols):
+    for row, parts in line_to_parts.items():
+        for part in parts:
+
+
+
 
 # TODO Part 2 is missing
 def main():
     engine_parts = list(INPUT.read_text(encoding="UTF-8").splitlines())
-    # engine_parts = EXAMPLE_LINES
+    engine_parts = EXAMPLE_LINES
     line_to_parts, line_to_symbols = parse_input(engine_parts)
+    print(line_to_parts)
+    print(line_to_symbols)
     print(sum(looking_for_symbol(line_to_parts, line_to_symbols)))
 
 
