@@ -5,7 +5,7 @@ from pathlib import Path
 
 from more_itertools import distribute
 
-INPUT_FILE = Path(__file__).parent / "puzzel_input.txt"
+INPUT_FILE = Path(__file__).parent / "input01.txt"
 PUZZLE_INPUT = """\
 3   4
 4   3
