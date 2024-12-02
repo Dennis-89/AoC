@@ -14,21 +14,22 @@ PUZZLE_INPUT = """\
 """.splitlines()
 
 
-def is_save(report):
-    return all(1 <= x - y <= 3 for x, y in pairwise(report)) or all(
-        1 <= y - x <= 3 for x, y in pairwise(report)
+def is_safe(report):
+    return (
+        all(1 <= x - y <= 3 for x, y in pairwise(report))
+        or all(1 <= y - x <= 3 for x, y in pairwise(report))
     )
 
 
-def get_save_reports(reports):
-    return sum(is_save(report) for report in reports)
+def get_safe_reports(reports):
+    return sum(is_safe(report) for report in reports)
 
 
 def main():
     puzzle_input = PUZZLE_INPUT
     puzzle_input = INPUT_FILE.read_text(encoding="UTF-8").splitlines()
     reports = list(map(lambda x: list(map(int, x.split())), puzzle_input))
-    print(get_save_reports(reports))
+    print(get_safe_reports(reports))
 
 
 if __name__ == "__main__":
