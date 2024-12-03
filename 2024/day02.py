@@ -25,11 +25,31 @@ def get_safe_reports(reports):
     return sum(is_safe(report) for report in reports)
 
 
+def skip_index(iterable, index):
+    for i, value in enumerate(iterable):
+        if i != index:
+            yield value
+
+
+def get_tolerated_safe_reports(reports):
+    safe_reports = 0
+    for report in reports:
+        if is_safe(report):
+            safe_reports += 1
+        else:
+            for index in range(len(report)):
+                if is_safe([value for value in skip_index(report, index)]):
+                    safe_reports += 1
+                    break
+    return safe_reports
+
+
 def main():
-    puzzle_input = PUZZLE_INPUT
+    # puzzle_input = PUZZLE_INPUT
     puzzle_input = INPUT_FILE.read_text(encoding="UTF-8").splitlines()
     reports = list(map(lambda x: list(map(int, x.split())), puzzle_input))
     print(get_safe_reports(reports))
+    print(get_tolerated_safe_reports(reports))
 
 
 if __name__ == "__main__":
