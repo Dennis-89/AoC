@@ -38,7 +38,7 @@ def get_tolerated_safe_reports(reports):
             safe_reports += 1
         else:
             for index in range(len(report)):
-                if is_safe([value for value in skip_index(report, index)]):
+                if is_safe(list(skip_index(report, index))):
                     safe_reports += 1
                     break
     return safe_reports
