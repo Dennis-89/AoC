@@ -38,9 +38,9 @@ def count_visited_places(start_position, guard_map):
             while True:
                 y += delta_y
                 x += delta_x
+                if y < 0 or x < 0:
+                    return visit_places
                 try:
-                    if y < 0 or x < 0:
-                        return visit_places
                     if guard_map[y][x] == "#":
                         y -= delta_y
                         x -= delta_x
