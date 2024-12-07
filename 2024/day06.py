@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from pathlib import Path
+from itertools import cycle
 
 INPUT_FILE = Path(__file__).parent / "input06.txt"
 
@@ -30,27 +31,22 @@ def get_start_position(guard_map):
 
 
 def count_visited_places(start_position, guard_map):
-    visit_places = 1
     y, x = start_position
-    already_visited = [(y, x)]
-    while True:
-        for (delta_y, delta_x) in DIRECTIONS:
-            while True:
-                y += delta_y
-                x += delta_x
-                if y < 0 or x < 0:
-                    return visit_places
-                try:
-                    if guard_map[y][x] == "#":
-                        y -= delta_y
-                        x -= delta_x
-                        break
-                except IndexError:
-                    return visit_places
-                if (y, x) not in already_visited:
-                    visit_places += 1
-                    already_visited.append((y, x))
-
+    already_visited = {(y, x)}
+    for delta_y, delta_x in cycle(DIRECTIONS):
+        while True:
+            y += delta_y
+            x += delta_x
+            if y < 0 or x < 0:
+                return len(already_visited)
+            try:
+                if guard_map[y][x] == "#":
+                    y -= delta_y
+                    x -= delta_x
+                    break
+            except IndexError:
+                return len(already_visited)
+            already_visited.add((y, x))
 
 
 def main():
