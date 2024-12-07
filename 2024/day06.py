@@ -45,11 +45,12 @@ def count_visited_places(start_position, guard_map):
                         y -= delta_y
                         x -= delta_x
                         break
-                    if (y, x) not in already_visited:
-                        visit_places += 1
-                        already_visited.append((y, x))
                 except IndexError:
                     return visit_places
+                if (y, x) not in already_visited:
+                    visit_places += 1
+                    already_visited.append((y, x))
+
 
 
 def main():
