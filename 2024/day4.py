@@ -2,6 +2,7 @@
 import re
 from collections import defaultdict
 from pathlib import Path
+from pprint import pprint
 
 INPUT_FILE = Path(__file__).parent / "input04.txt"
 
@@ -54,11 +55,16 @@ def count_words(lines, lines_to_letter, search_word, delta):
     return sum(words_counter)
 
 
+def rotate_45(lines):
+    pprint(lines, indent=4)
+
+
 def main():
     puzzle_input = PUZZLE_INPUT
     # puzzle_input = INPUT_FILE.read_text(encoding="UTF-8").splitlines()
     lines_to_x = parse_input(puzzle_input, "X")
     print(count_words(puzzle_input, lines_to_x, SEARCH_WORD, DELTA))
+    print(rotate_45(puzzle_input))
 
 
 
