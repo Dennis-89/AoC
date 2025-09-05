@@ -15,14 +15,13 @@ PUZZLE_INPUT = """\
 
 
 def is_safe(report):
-    return (
-        all(1 <= x - y <= 3 for x, y in pairwise(report))
-        or all(1 <= y - x <= 3 for x, y in pairwise(report))
+    return all(1 <= x - y <= 3 for x, y in pairwise(report)) or all(
+        1 <= y - x <= 3 for x, y in pairwise(report)
     )
 
 
 def get_safe_reports(reports):
-    return sum(is_safe(report) for report in reports)
+    return sum(map(is_safe, reports))
 
 
 def skip_index(iterable, index):
@@ -34,18 +33,16 @@ def skip_index(iterable, index):
 def get_tolerated_safe_reports(reports):
     safe_reports = 0
     for report in reports:
-        if is_safe(report):
-            safe_reports += 1
-        else:
-            for index in range(len(report)):
-                if is_safe(list(skip_index(report, index))):
-                    safe_reports += 1
+        if not (safe := is_safe(report)):
+            for changed_report in map(lambda i: skip_index(report, i), range(len(report))):
+                if safe := is_safe(list(changed_report)):
                     break
+        safe_reports += safe
     return safe_reports
 
 
 def main():
-    # puzzle_input = PUZZLE_INPUT
+    puzzle_input = PUZZLE_INPUT
     puzzle_input = INPUT_FILE.read_text(encoding="UTF-8").splitlines()
     reports = list(map(lambda x: list(map(int, x.split())), puzzle_input))
     print(get_safe_reports(reports))
