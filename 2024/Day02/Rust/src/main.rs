@@ -1,88 +1,52 @@
-use std::{
-    fs::File, io::{prelude::*, BufReader}, path::Path
-};
-extern crate itertools;
 use itertools::Itertools;
+use std::fs::read_to_string;
 
-
-fn is_safe(report: Vec<i32>) -> bool {
-    let mut safe_up: Vec<bool> = Vec::new();
-    let mut safe_down: Vec<bool> = Vec::new();
+fn is_safe(report: &[i32]) -> bool {
+    let mut safe_up: bool = true;
+    let mut safe_down: bool = true;
     for (x, y) in report.into_iter().tuple_windows() {
-        if 1 <= x - y && x -y <= 3 {
-            safe_up.push(true);
-        } else {safe_up.push(false)}
-        if 1 <= y - x && y - x <= 3 {
-            safe_down.push(true);
-        } else {safe_down.push(false)}
-    };
-    safe_up.iter().all(|x| *x) || safe_down.iter().all(|x| *x)
+        safe_up &= 1 <= x - y && x - y <= 3;
+        safe_down &= 1 <= y - x && y - x <= 3;
+    }
+    safe_up || safe_down
 }
 
-
-fn get_safe_reports(reports: Vec<Vec<i32>>) -> u16 {
-    let safe_reports: Vec<_>= reports.into_iter()
-        .map(|report| is_safe(report))
-        .collect();
-    safe_reports.into_iter().filter(|b| *b).count().try_into().unwrap()
+fn count_safe_reports(reports: &[Vec<i32>]) -> usize {
+    reports.iter().filter(|report| is_safe(report)).count()
 }
 
-
-fn skip_index(iterable: Vec<i32>, index: usize) -> Vec<i32> {
-    iterable.into_iter()
+fn skip_index(iterable: &[i32], index: usize) -> Vec<i32> {
+    iterable
+        .into_iter()
         .enumerate()
         .filter(|&(i, _)| i != index)
-        .map(|(_, v)| v)
+        .map(|(_, &v)| v)
         .collect()
 }
 
-
-fn get_tolerated_safe_reports(reports: Vec<Vec<i32>>) -> u16 {
-    let mut safe_reports: u16 = 0;
-    for report in reports {
-        let mut safe = 0;
-        if is_safe(report.clone()) == true {
-            safe = 1;
-        } else {
-            for index in 0..report.len() {
-                let optimized_report = skip_index(report.clone(), index);
-                if is_safe(optimized_report) == true {
-                    safe = 1;
-                    break;
-                };
-            };
-        };
-        safe_reports += safe;
-        };
-    safe_reports
-    }
-
-
-fn read_lines(filepath: impl AsRef<Path>) -> Vec<String> {
-    let file_content = File::open(filepath).expect("File not found");
-    let buffer = BufReader::new(file_content);
-    buffer.lines()
-        .map(|l| l.expect("Can't read"))
-        .collect()
-}
-
-
-fn format_input(lines: Vec<String>) -> Vec<Vec<i32>> {
-    let mut reports: Vec<Vec<_>> = Vec::new();
-    for line in lines {
-        let line = line.split_whitespace().map(|x| x.parse().unwrap()).collect();
-        reports.push(line);
-    };
+fn count_tolerated_safe_reports(reports: &[Vec<i32>]) -> usize {
     reports
-
+        .iter()
+        .filter(|report| {
+            is_safe(report) || (0..report.len()).any(|index| is_safe(&skip_index(report, index)))
+        })
+        .count()
 }
 
+fn parse_lines<'a>(lines: impl Iterator<Item = &'a str>) -> Vec<Vec<i32>> {
+    lines
+        .map(|line| {
+            line.split_whitespace()
+                .map(|word| word.parse().unwrap())
+                .collect()
+        })
+        .collect()
+}
 
 fn main() {
-    let lines = read_lines("/home/dennis/PycharmProjects/AdventofCode/2024/Day02/input02.txt");
-    let reports = format_input(lines);
-    println!("{:?}", get_safe_reports(reports.clone()));
-    println!("{:?}", get_tolerated_safe_reports(reports));
+    let input =
+        read_to_string("/home/dennis/PycharmProjects/AdventofCode/2024/Day02/input02.txt").unwrap();
+    let reports = parse_lines(input.lines());
+    println!("{:?}", count_safe_reports(&reports));
+    println!("{:?}", count_tolerated_safe_reports(&reports));
 }
-
-
