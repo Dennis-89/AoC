@@ -4,7 +4,8 @@ use std::fs::read_to_string;
 use std::iter::repeat_n;
 use std::time::Instant;
 
-type Operations = [fn(&u64, &u64) -> u64; 2];
+type Operations = Box<[fn(&u64, &u64) -> u64]>;
+
 
 fn add(a: &u64, b: &u64) -> u64 {
     a + b
@@ -34,8 +35,8 @@ fn check_calibration(target: &u64, values: &[u64], operations: &Operations) -> b
         let mut values = values.iter();
         let mut result: u64 = *values.next().unwrap();
         for (operation, value) in operations.iter().zip_eq(values) {
-            let result_: u64 = operation(&result, value);
-            result = result_;
+            result = operation(&result, value);
+            //result = result_;
             if result > *target {
                 break;
             }
@@ -65,7 +66,7 @@ fn main() {
         Ok(values) => values,
         Err(error) => panic!("Error: {error:?}"),
     };
-    let operations: Operations = [add, multiply];
+    let operations: Operations = Box::new([add, multiply]);
     let start = Instant::now();
     let sum_ = sum_solvable_calibrations(&calibrations, &operations);
     println!("{:?}", sum_);
